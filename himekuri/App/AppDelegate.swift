@@ -108,16 +108,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         item.button?.image = NSImage(
             systemSymbolName: "calendar",
-            accessibilityDescription: "Himekuri"
+            accessibilityDescription: String(localized: "Himekuri")
         )
 
         let menu = NSMenu()
         menu.delegate = self
 
-        menu.addItem(withTitle: "Show Calendar", action: #selector(showCalendar), keyEquivalent: "")
+        menu.addItem(withTitle: String(localized: "Show Calendar"), action: #selector(showCalendar), keyEquivalent: "")
         menu.addItem(.separator())
 
-        let themeItem = NSMenuItem(title: "Theme", action: nil, keyEquivalent: "")
+        let themeItem = NSMenuItem(title: String(localized: "Theme"), action: nil, keyEquivalent: "")
         let themeMenu = NSMenu()
         themeMenu.delegate = self
         for theme in PageTheme.allCases {
@@ -142,12 +142,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         #endif
 
         menu.addItem(.separator())
-        menu.addItem(withTitle: "About Himekuri", action: #selector(showAbout), keyEquivalent: "")
-        menu.addItem(withTitle: "Check for Updates…", action: #selector(checkForUpdates(_:)), keyEquivalent: "")
+        menu.addItem(withTitle: String(localized: "About Himekuri"), action: #selector(showAbout), keyEquivalent: "")
+        menu.addItem(withTitle: String(localized: "Check for Updates…"), action: #selector(checkForUpdates(_:)), keyEquivalent: "")
         // Routed through our own selector: macOS 26 auto-attaches a symbol
         // to items targeting the standard terminate(_:) action, which forces
         // an image column and indents the whole menu.
-        menu.addItem(withTitle: "Quit Himekuri", action: #selector(quit), keyEquivalent: "q")
+        menu.addItem(withTitle: String(localized: "Quit Himekuri"), action: #selector(quit), keyEquivalent: "q")
 
         item.menu = menu
         statusItem = item

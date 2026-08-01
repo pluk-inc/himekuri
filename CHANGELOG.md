@@ -9,6 +9,10 @@ keep the `## [X.Y.Z] – YYYY-MM-DD` heading format.
 
 ## [0.1.1] – 2026-08-01
 
+### Added
+
+- Japanese and Simplified Chinese localization for the menu-bar menu
+
 ### Removed
 
 - Auto-Tear at Midnight — the pad never turns its own page; tearing is yours to do

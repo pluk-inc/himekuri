@@ -13,9 +13,9 @@ enum WindowMode: Int, CaseIterable {
 
     var title: String {
         switch self {
-        case .floating: "Float Above Windows"
-        case .normal: "Standard Window"
-        case .desktop: "Pin to Desktop"
+        case .floating: String(localized: "Float Above Windows")
+        case .normal: String(localized: "Standard Window")
+        case .desktop: String(localized: "Pin to Desktop")
         }
     }
 }

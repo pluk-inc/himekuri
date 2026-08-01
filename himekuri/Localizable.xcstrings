@@ -1,0 +1,61 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Show Calendar" : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "カレンダーを表示" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "显示日历" } }
+      }
+    },
+    "Theme" : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "テーマ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "主题" } }
+      }
+    },
+    "Float Above Windows" : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ウインドウの手前に表示" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "悬浮于窗口上方" } }
+      }
+    },
+    "Standard Window" : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "標準ウインドウ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "标准窗口" } }
+      }
+    },
+    "Pin to Desktop" : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "デスクトップに固定" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "固定到桌面" } }
+      }
+    },
+    "About Himekuri" : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Himekuri について" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "关于 Himekuri" } }
+      }
+    },
+    "Check for Updates…" : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "アップデートを確認…" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "检查更新…" } }
+      }
+    },
+    "Quit Himekuri" : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Himekuri を終了" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "退出 Himekuri" } }
+      }
+    },
+    "Himekuri" : {
+      "comment" : "Status item accessibility label",
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "日めくり" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "日历" } }
+      }
+    }
+  },
+  "version" : "1.0"
+}
