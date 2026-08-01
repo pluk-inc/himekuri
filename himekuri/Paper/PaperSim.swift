@@ -6,20 +6,16 @@
 //  a verlet-integrated grid with inextensible distance constraints, stiff
 //  bending constraints, and breakable fibers along the staple seam.
 //  Simulated in 3D — the bulge toward the viewer is what shortens the
-//  on-screen projection, exactly like real paper — and rendered by warping
-//  the printed page with SKWarpGeometryGrid.
+//  on-screen projection, exactly like real paper.
 //
 
-import SpriteKit
-import SwiftUI
+import Foundation
 import simd
-
-// MARK: - Solver
 
 @MainActor
 final class PaperSim {
-    static let cols = 11
-    static let rows = 14 // row 0: page top edge; row 1: the tear line; then down
+    nonisolated static let cols = 11
+    nonisolated static let rows = 14 // row 0: page top edge; row 1: the tear line; then down
 
     private(set) var pos: [SIMD3<Float>] = []
     private var prev: [SIMD3<Float>] = []
@@ -39,26 +35,42 @@ final class PaperSim {
     private var grabTarget = SIMD3<Float>(0, 0, 0)
     private var sleeping = true
 
-    private let W = Float(Metrics.pageW)
-    private let H = Float(Metrics.pageH)
-    private let tearY = Float(Metrics.tearY)
-
     init() {
         reset()
     }
 
-    /// Rest layout: a flat page hanging on the pad.
-    func reset() {
-        pos.removeAll(keepingCapacity: true)
-        var jitter = SeededRandom(seed: 0xC0FFEE)
-        for r in 0..<Self.rows {
-            let y = rowY(r)
-            for c in 0..<Self.cols {
-                let x = Float(c) / Float(Self.cols - 1) * W
-                // A hair of z noise so in-plane compression buckles OUT
-                // (toward the viewer) instead of fighting a perfect plane.
-                pos.append(SIMD3(x, y, 0.02 + 0.02 * jitter.unit()))
+    /// Grid vertex positions for a flat page at rest (page coordinates, z = 0).
+    nonisolated static func restLayout() -> [SIMD3<Float>] {
+        let w = Float(Metrics.pageW)
+        var layout: [SIMD3<Float>] = []
+        layout.reserveCapacity(rows * cols)
+        for r in 0..<rows {
+            let y = restRowY(r)
+            for c in 0..<cols {
+                layout.append(SIMD3(Float(c) / Float(cols - 1) * w, y, 0))
             }
+        }
+        return layout
+    }
+
+    private nonisolated static func restRowY(_ r: Int) -> Float {
+        let h = Float(Metrics.pageH)
+        let tearY = Float(Metrics.tearY)
+        switch r {
+        case 0: return 0
+        case 1: return tearY
+        default: return tearY + (h - tearY) * Float(r - 1) / Float(rows - 2)
+        }
+    }
+
+    /// Rest state: a flat page hanging on the pad.
+    func reset() {
+        pos = Self.restLayout()
+        // A hair of z noise so in-plane compression buckles OUT
+        // (toward the viewer) instead of fighting a perfect plane.
+        var jitter = SeededRandom(seed: 0xC0FFEE)
+        for i in pos.indices {
+            pos[i].z = 0.02 + 0.02 * jitter.unit()
         }
         prev = pos
         home = pos
@@ -66,14 +78,6 @@ final class PaperSim {
         grabIndex = nil
         sleeping = true
         if constraints.isEmpty { buildConstraints() }
-    }
-
-    private func rowY(_ r: Int) -> Float {
-        switch r {
-        case 0: return 0
-        case 1: return tearY
-        default: return tearY + (H - tearY) * Float(r - 1) / Float(Self.rows - 2)
-        }
     }
 
     private func idx(_ r: Int, _ c: Int) -> Int { r * Self.cols + c }
@@ -100,7 +104,7 @@ final class PaperSim {
         }
     }
 
-    // MARK: Interaction
+    // MARK: - Interaction
 
     func setGrab(at p: CGPoint) {
         var best = idx(1, 0)
@@ -133,15 +137,16 @@ final class PaperSim {
     /// Seam state comes from the gesture's crack model: columns within
     /// `front` of `centerX` have lost their fiber at the tear line.
     func setSeam(centerX: CGFloat, front: CGFloat) {
+        let w = Float(Metrics.pageW)
         for c in 0..<Self.cols {
-            let x = Float(c) / Float(Self.cols - 1) * W
+            let x = Float(c) / Float(Self.cols - 1) * w
             let broken = abs(x - Float(centerX)) < Float(front)
             if broken, fiberIntact[c] { sleeping = false }
             fiberIntact[c] = fiberIntact[c] && !broken
         }
     }
 
-    // MARK: Stepping
+    // MARK: - Stepping
 
     func step(_ dt: Float) {
         guard !sleeping else { return }
@@ -208,7 +213,7 @@ final class PaperSim {
         var maxMove: Float = 0
         var maxVel: Float = 0
         for i in pos.indices {
-            maxMove = max(maxMove, simd_distance_squared(pos[i], restTarget(i)))
+            maxMove = max(maxMove, simd_distance_squared(pos[i], home[i]))
             maxVel = max(maxVel, simd_distance_squared(pos[i], prev[i]))
         }
         if maxVel < 0.0004 {
@@ -218,81 +223,5 @@ final class PaperSim {
             }
             sleeping = true
         }
-    }
-
-    private func restTarget(_ i: Int) -> SIMD3<Float> { home[i] }
-}
-
-// MARK: - SpriteKit rendering
-
-@MainActor
-final class PaperScene: SKScene {
-    var sim: PaperSim?
-    private var sprite: SKSpriteNode?
-    private var sourcePositions: [vector_float2] = []
-    private var lastTime: TimeInterval = 0
-
-    override init(size: CGSize) {
-        super.init(size: size)
-        backgroundColor = .clear
-        scaleMode = .resizeFill
-        buildSourcePositions()
-    }
-
-    required init?(coder: NSCoder) { fatalError() }
-
-    private func buildSourcePositions() {
-        // Grid vertices in warp space: row-major from the BOTTOM-left, so
-        // sim row r (top-down) lands at grid row (rows-1-r).
-        sourcePositions = .init(repeating: .zero, count: PaperSim.rows * PaperSim.cols)
-        let sim = PaperSim() // rest layout only
-        for r in 0..<PaperSim.rows {
-            for c in 0..<PaperSim.cols {
-                let p = sim.pos[r * PaperSim.cols + c]
-                let gi = (PaperSim.rows - 1 - r) * PaperSim.cols + c
-                sourcePositions[gi] = vector_float2(
-                    p.x / Float(Metrics.pageW),
-                    1 - p.y / Float(Metrics.pageH)
-                )
-            }
-        }
-    }
-
-    func setPageTexture(_ texture: SKTexture) {
-        if sprite == nil {
-            let node = SKSpriteNode(texture: texture)
-            node.anchorPoint = .zero
-            node.size = CGSize(width: Metrics.pageW, height: Metrics.pageH)
-            node.position = CGPoint(x: Metrics.shaderPadX, y: Metrics.shaderPadBottom)
-            addChild(node)
-            sprite = node
-        } else {
-            sprite?.texture = texture
-        }
-    }
-
-    override func update(_ currentTime: TimeInterval) {
-        guard let sim, let sprite else { return }
-        let dt = lastTime == 0 ? 1.0 / 60.0 : currentTime - lastTime
-        lastTime = currentTime
-        sim.step(Float(dt))
-
-        var dest = [vector_float2](repeating: .zero, count: sourcePositions.count)
-        for r in 0..<PaperSim.rows {
-            for c in 0..<PaperSim.cols {
-                let p = sim.pos[r * PaperSim.cols + c]
-                let gi = (PaperSim.rows - 1 - r) * PaperSim.cols + c
-                dest[gi] = vector_float2(
-                    p.x / Float(Metrics.pageW),
-                    1 - p.y / Float(Metrics.pageH)
-                )
-            }
-        }
-        sprite.warpGeometry = SKWarpGeometryGrid(
-            columns: PaperSim.cols - 1,
-            rows: PaperSim.rows - 1,
-            sourcePositions: sourcePositions,
-            destinationPositions: dest
-        )
     }
 }

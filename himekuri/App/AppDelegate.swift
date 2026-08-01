@@ -9,25 +9,9 @@ import Cocoa
 import Sparkle
 import SwiftUI
 
-/// Where the pad lives relative to other windows.
-enum WindowMode: Int, CaseIterable {
-    case floating = 0  // above everything
-    case normal = 1    // an ordinary window
-    case desktop = 2   // pinned to the desktop, beneath all windows
-
-    var title: String {
-        switch self {
-        case .floating: "Float Above Windows"
-        case .normal: "Standard Window"
-        case .desktop: "Pin to Desktop"
-        }
-    }
-}
-
 @main
 class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     static let modeKey = "himekuri.windowMode"
-    static let autoTearKey = "himekuri.autoTear"
 
     private var paperWindow: PaperWindow?
     private var statusItem: NSStatusItem?
@@ -41,13 +25,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         UserDefaults.standard.register(defaults: [
             Self.modeKey: WindowMode.floating.rawValue,
-            Self.autoTearKey: false,
         ])
         NSApp.setActivationPolicy(.accessory)
         makeWindow()
         makeStatusItem()
         NSApp.activate()
     }
+
+    func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
+        true
+    }
+
+    // MARK: - Window
 
     private var currentMode: WindowMode {
         WindowMode(rawValue: UserDefaults.standard.integer(forKey: Self.modeKey)) ?? .floating
@@ -72,12 +61,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             window.orderFront(nil)
         }
     }
-
-    func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
-        true
-    }
-
-    // MARK: - Window
 
     private func makeWindow() {
         let rect = NSRect(x: 0, y: 0, width: Metrics.windowW, height: Metrics.windowH)
@@ -151,13 +134,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             item.tag = 10 + mode.rawValue
             menu.addItem(item)
         }
+
+        #if DEBUG
+        // Development escape hatch only — a shipped himekuri has no way back.
         menu.addItem(.separator())
-
-        let auto = NSMenuItem(title: "Auto-Tear at Midnight", action: #selector(toggleAutoTear), keyEquivalent: "")
-        auto.tag = 2
-        menu.addItem(auto)
-
-        menu.addItem(withTitle: "Reset to Today…", action: #selector(resetToToday), keyEquivalent: "")
+        menu.addItem(withTitle: "Reset to Today… (Dev)", action: #selector(resetToToday), keyEquivalent: "")
+        #endif
 
         menu.addItem(.separator())
         menu.addItem(withTitle: "About Himekuri", action: #selector(showAbout), keyEquivalent: "")
@@ -177,11 +159,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         for theme in PageTheme.allCases {
             menu.item(withTag: 20 + theme.rawValue)?.state = theme.rawValue == currentTheme ? .on : .off
         }
-        menu.item(withTag: 2)?.state = defaults.bool(forKey: Self.autoTearKey) ? .on : .off
-    }
-
-    @objc private func selectTheme(_ sender: NSMenuItem) {
-        UserDefaults.standard.set(sender.tag - 20, forKey: PageTheme.defaultsKey)
     }
 
     // MARK: - Actions
@@ -201,21 +178,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         applyMode(mode)
     }
 
-    @objc private func toggleAutoTear() {
-        let defaults = UserDefaults.standard
-        defaults.set(!defaults.bool(forKey: Self.autoTearKey), forKey: Self.autoTearKey)
-    }
-
-    @objc private func resetToToday() {
-        let alert = NSAlert()
-        alert.messageText = "Reset the pad to today's page?"
-        alert.informativeText = "The calendar will show today again. This is the only way back."
-        alert.addButton(withTitle: "Reset")
-        alert.addButton(withTitle: "Cancel")
-        NSApp.activate()
-        if alert.runModal() == .alertFirstButtonReturn {
-            NotificationCenter.default.post(name: .himekuriResetToToday, object: nil)
-        }
+    @objc private func selectTheme(_ sender: NSMenuItem) {
+        UserDefaults.standard.set(sender.tag - 20, forKey: PageTheme.defaultsKey)
     }
 
     @objc private func showAbout() {
@@ -227,4 +191,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         NSApp.activate()
         updaterController.updater.checkForUpdates()
     }
+
+    #if DEBUG
+    @objc private func resetToToday() {
+        let alert = NSAlert()
+        alert.messageText = "Reset the pad to today's page?"
+        alert.informativeText = "The calendar will show today again. This is the only way back."
+        alert.addButton(withTitle: "Reset")
+        alert.addButton(withTitle: "Cancel")
+        NSApp.activate()
+        if alert.runModal() == .alertFirstButtonReturn {
+            NotificationCenter.default.post(name: .himekuriResetToToday, object: nil)
+        }
+    }
+    #endif
 }

@@ -103,7 +103,7 @@ nonisolated enum PageTheme: Int, CaseIterable {
     }
 }
 
-/// Kanji numerals for the traditional theme (1–31, months 1–12).
+/// Kanji numerals for the traditional themes (1–31, months 1–12).
 nonisolated func kanjiNumber(_ n: Int) -> String {
     let digits = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"]
     switch n {

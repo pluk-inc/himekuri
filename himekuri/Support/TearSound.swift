@@ -141,17 +141,3 @@ final class TearSound {
         return buffer
     }
 }
-
-// MARK: - Trackpad haptics
-
-enum Haptics {
-    /// Small tick while the paper stretches.
-    static func tick() {
-        NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
-    }
-
-    /// The moment the page lets go.
-    static func rip() {
-        NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .now)
-    }
-}
