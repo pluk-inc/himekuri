@@ -2,125 +2,229 @@
 //  AppDelegate.swift
 //  himekuri
 //
-//  Created by Fauzaan on 7/30/26.
+//  Menu-bar app hosting the floating himekuri pad.
 //
 
 import Cocoa
+import Sparkle
+import SwiftUI
+
+/// Where the pad lives relative to other windows.
+enum WindowMode: Int, CaseIterable {
+    case floating = 0  // above everything
+    case normal = 1    // an ordinary window
+    case desktop = 2   // pinned to the desktop, beneath all windows
+
+    var title: String {
+        switch self {
+        case .floating: "Float Above Windows"
+        case .normal: "Standard Window"
+        case .desktop: "Pin to Desktop"
+        }
+    }
+}
 
 @main
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
+    static let modeKey = "himekuri.windowMode"
+    static let autoTearKey = "himekuri.autoTear"
 
-    @IBOutlet var window: NSWindow!
+    private var paperWindow: PaperWindow?
+    private var statusItem: NSStatusItem?
 
+    let updaterController = SPUStandardUpdaterController(
+        startingUpdater: true,
+        updaterDelegate: nil,
+        userDriverDelegate: nil
+    )
 
-    func applicationDidFinishLaunching(_ aNotification: Notification) {
-        // Insert code here to initialize your application
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        UserDefaults.standard.register(defaults: [
+            Self.modeKey: WindowMode.floating.rawValue,
+            Self.autoTearKey: false,
+        ])
+        NSApp.setActivationPolicy(.accessory)
+        makeWindow()
+        makeStatusItem()
+        NSApp.activate()
     }
 
-    func applicationWillTerminate(_ aNotification: Notification) {
-        // Insert code here to tear down your application
+    private var currentMode: WindowMode {
+        WindowMode(rawValue: UserDefaults.standard.integer(forKey: Self.modeKey)) ?? .floating
+    }
+
+    private func applyMode(_ mode: WindowMode) {
+        guard let window = paperWindow else { return }
+        switch mode {
+        case .floating:
+            window.level = .floating
+            window.collectionBehavior = [.canJoinAllSpaces]
+            window.orderFront(nil)
+        case .normal:
+            window.level = .normal
+            window.collectionBehavior = [.canJoinAllSpaces]
+            window.orderFront(nil)
+        case .desktop:
+            // Just above the desktop icons, beneath every app window; stays
+            // put during Mission Control and never joins the window cycle.
+            window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.desktopIconWindow)) + 1)
+            window.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
+            window.orderFront(nil)
+        }
     }
 
     func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
-        return true
+        true
     }
 
-    // MARK: - Core Data stack
+    // MARK: - Window
 
-    lazy var persistentContainer: NSPersistentContainer = {
-        /*
-         The persistent container for the application. This implementation
-         creates and returns a container, having loaded the store for the
-         application to it. This property is optional since there are legitimate
-         error conditions that could cause the creation of the store to fail.
-        */
-        let container = NSPersistentContainer(name: "himekuri")
-        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
-            if let error = error {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                 
-                /*
-                 Typical reasons for an error here include:
-                 * The parent directory does not exist, cannot be created, or disallows writing.
-                 * The persistent store is not accessible, due to permissions or data protection when the device is locked.
-                 * The device is out of space.
-                 * The store could not be migrated to the current model version.
-                 Check the error message to determine what the actual problem was.
-                 */
-                fatalError("Unresolved error \(error)")
-            }
-        })
-        return container
-    }()
+    private func makeWindow() {
+        let rect = NSRect(x: 0, y: 0, width: Metrics.windowW, height: Metrics.windowH)
+        let window = PaperWindow(
+            contentRect: rect,
+            styleMask: [.borderless],
+            backing: .buffered,
+            defer: false
+        )
+        window.isOpaque = false
+        window.backgroundColor = .clear
+        window.hasShadow = false
+        // Window movement is handled by an explicit WindowDragGesture on the pad,
+        // so it never steals the tear gesture.
+        window.isMovableByWindowBackground = false
+        window.isReleasedWhenClosed = false
 
-    // MARK: - Core Data Saving and Undo support
+        let host = PassThroughHostingView(rootView: ContentView())
+        host.frame = rect
+        let margin: CGFloat = 14
+        host.interactiveRect = CGRect(
+            x: (Metrics.windowW - Metrics.pageW) / 2 - margin,
+            y: Metrics.blockTopPad - 8,
+            width: Metrics.pageW + 2 * margin,
+            height: Metrics.bindingH + Metrics.pageH + 44
+        )
+        window.contentView = host
+        paperWindow = window
+        applyMode(currentMode)
 
-    func save() {
-        // Performs the save action for the application, which is to send the save: message to the application's managed object context. Any encountered errors are presented to the user.
-        let context = persistentContainer.viewContext
-
-        if !context.commitEditing() {
-            NSLog("\(NSStringFromClass(type(of: self))) unable to commit editing before saving")
+        if !window.setFrameUsingName("HimekuriWindow"), let screen = NSScreen.main {
+            let v = screen.visibleFrame
+            window.setFrameOrigin(NSPoint(
+                x: v.maxX - Metrics.windowW - 36,
+                y: v.maxY - Metrics.windowH + 40
+            ))
         }
-        if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                // Customize this code block to include application-specific recovery steps.
-                let nserror = error as NSError
-                NSApplication.shared.presentError(nserror)
-            }
+        window.setFrameAutosaveName("HimekuriWindow")
+        window.makeKeyAndOrderFront(nil)
+    }
+
+    // MARK: - Status item
+
+    private func makeStatusItem() {
+        let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+        item.button?.image = NSImage(
+            systemSymbolName: "calendar",
+            accessibilityDescription: "Himekuri"
+        )
+
+        let menu = NSMenu()
+        menu.delegate = self
+
+        menu.addItem(withTitle: "Show Calendar", action: #selector(showCalendar), keyEquivalent: "")
+        menu.addItem(.separator())
+
+        let themeItem = NSMenuItem(title: "Theme", action: nil, keyEquivalent: "")
+        let themeMenu = NSMenu()
+        themeMenu.delegate = self
+        for theme in PageTheme.allCases {
+            let item = NSMenuItem(title: theme.title, action: #selector(selectTheme(_:)), keyEquivalent: "")
+            item.tag = 20 + theme.rawValue
+            themeMenu.addItem(item)
+        }
+        menu.setSubmenu(themeMenu, for: themeItem)
+        menu.addItem(themeItem)
+        menu.addItem(.separator())
+
+        for mode in WindowMode.allCases {
+            let item = NSMenuItem(title: mode.title, action: #selector(selectMode(_:)), keyEquivalent: "")
+            item.tag = 10 + mode.rawValue
+            menu.addItem(item)
+        }
+        menu.addItem(.separator())
+
+        let auto = NSMenuItem(title: "Auto-Tear at Midnight", action: #selector(toggleAutoTear), keyEquivalent: "")
+        auto.tag = 2
+        menu.addItem(auto)
+
+        menu.addItem(withTitle: "Reset to Today…", action: #selector(resetToToday), keyEquivalent: "")
+
+        menu.addItem(.separator())
+        menu.addItem(withTitle: "About Himekuri", action: #selector(showAbout), keyEquivalent: "")
+        menu.addItem(withTitle: "Check for Updates…", action: #selector(checkForUpdates(_:)), keyEquivalent: "")
+        menu.addItem(withTitle: "Quit Himekuri", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+
+        item.menu = menu
+        statusItem = item
+    }
+
+    func menuNeedsUpdate(_ menu: NSMenu) {
+        let defaults = UserDefaults.standard
+        for mode in WindowMode.allCases {
+            menu.item(withTag: 10 + mode.rawValue)?.state = mode == currentMode ? .on : .off
+        }
+        let currentTheme = defaults.integer(forKey: PageTheme.defaultsKey)
+        for theme in PageTheme.allCases {
+            menu.item(withTag: 20 + theme.rawValue)?.state = theme.rawValue == currentTheme ? .on : .off
+        }
+        menu.item(withTag: 2)?.state = defaults.bool(forKey: Self.autoTearKey) ? .on : .off
+    }
+
+    @objc private func selectTheme(_ sender: NSMenuItem) {
+        UserDefaults.standard.set(sender.tag - 20, forKey: PageTheme.defaultsKey)
+    }
+
+    // MARK: - Actions
+
+    @objc private func showCalendar() {
+        guard let window = paperWindow else { return }
+        if let screen = NSScreen.main, !screen.visibleFrame.intersects(window.frame) {
+            window.center()
+        }
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate()
+    }
+
+    @objc private func selectMode(_ sender: NSMenuItem) {
+        guard let mode = WindowMode(rawValue: sender.tag - 10) else { return }
+        UserDefaults.standard.set(mode.rawValue, forKey: Self.modeKey)
+        applyMode(mode)
+    }
+
+    @objc private func toggleAutoTear() {
+        let defaults = UserDefaults.standard
+        defaults.set(!defaults.bool(forKey: Self.autoTearKey), forKey: Self.autoTearKey)
+    }
+
+    @objc private func resetToToday() {
+        let alert = NSAlert()
+        alert.messageText = "Reset the pad to today's page?"
+        alert.informativeText = "The calendar will show today again. This is the only way back."
+        alert.addButton(withTitle: "Reset")
+        alert.addButton(withTitle: "Cancel")
+        NSApp.activate()
+        if alert.runModal() == .alertFirstButtonReturn {
+            NotificationCenter.default.post(name: .himekuriResetToToday, object: nil)
         }
     }
 
-    func windowWillReturnUndoManager(window: NSWindow) -> UndoManager? {
-        // Returns the NSUndoManager for the application. In this case, the manager returned is that of the managed object context for the application.
-        return persistentContainer.viewContext.undoManager
+    @objc private func showAbout() {
+        NSApp.activate()
+        NSApp.orderFrontStandardAboutPanel(nil)
     }
 
-    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
-        // Save changes in the application's managed object context before the application terminates.
-        let context = persistentContainer.viewContext
-        
-        if !context.commitEditing() {
-            NSLog("\(NSStringFromClass(type(of: self))) unable to commit editing to terminate")
-            return .terminateCancel
-        }
-        
-        if !context.hasChanges {
-            return .terminateNow
-        }
-        
-        do {
-            try context.save()
-        } catch {
-            let nserror = error as NSError
-
-            // Customize this code block to include application-specific recovery steps.
-            let result = sender.presentError(nserror)
-            if (result) {
-                return .terminateCancel
-            }
-            
-            let question = NSLocalizedString("Could not save changes while quitting. Quit anyway?", comment: "Quit without saves error question message")
-            let info = NSLocalizedString("Quitting now will lose any changes you have made since the last successful save", comment: "Quit without saves error question info");
-            let quitButton = NSLocalizedString("Quit anyway", comment: "Quit anyway button title")
-            let cancelButton = NSLocalizedString("Cancel", comment: "Cancel button title")
-            let alert = NSAlert()
-            alert.messageText = question
-            alert.informativeText = info
-            alert.addButton(withTitle: quitButton)
-            alert.addButton(withTitle: cancelButton)
-            
-            let answer = alert.runModal()
-            if answer == .alertSecondButtonReturn {
-                return .terminateCancel
-            }
-        }
-        // If we got here, it is time to quit.
-        return .terminateNow
+    @IBAction func checkForUpdates(_ sender: Any?) {
+        NSApp.activate()
+        updaterController.updater.checkForUpdates()
     }
-
 }
-

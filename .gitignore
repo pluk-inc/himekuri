@@ -1,0 +1,13 @@
+# Xcode build output
+build/
+DerivedData/
+
+# User-specific Xcode state
+xcuserdata/
+*.xcuserstate
+
+# macOS
+.DS_Store
+
+# Secrets / local env
+.env
