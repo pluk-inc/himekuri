@@ -144,7 +144,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(.separator())
         menu.addItem(withTitle: "About Himekuri", action: #selector(showAbout), keyEquivalent: "")
         menu.addItem(withTitle: "Check for Updates…", action: #selector(checkForUpdates(_:)), keyEquivalent: "")
-        menu.addItem(withTitle: "Quit Himekuri", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        // Routed through our own selector: macOS 26 auto-attaches a symbol
+        // to items targeting the standard terminate(_:) action, which forces
+        // an image column and indents the whole menu.
+        menu.addItem(withTitle: "Quit Himekuri", action: #selector(quit), keyEquivalent: "q")
 
         item.menu = menu
         statusItem = item
@@ -190,6 +193,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @IBAction func checkForUpdates(_ sender: Any?) {
         NSApp.activate()
         updaterController.updater.checkForUpdates()
+    }
+
+    @objc private func quit() {
+        NSApp.terminate(nil)
     }
 
     #if DEBUG
