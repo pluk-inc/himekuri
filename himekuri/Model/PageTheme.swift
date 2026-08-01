@@ -13,7 +13,8 @@ nonisolated enum PageTheme: Int, CaseIterable {
     case swiss = 1     // minimal Swiss typography
     case brutalist = 2 // heavy mono blocks
     case office = 3    // retro American memo calendar
-    case koyomi = 4    // traditional lunar almanac
+    case koyomi = 4    // traditional Japanese lunar almanac
+    case huangli = 5   // Chinese almanac (黄历)
 
     static let defaultsKey = "himekuri.theme"
 
@@ -24,6 +25,7 @@ nonisolated enum PageTheme: Int, CaseIterable {
         case .brutalist: "Brutalist"
         case .office: "Retro Office"
         case .koyomi: "Koyomi"
+        case .huangli: "Huangli"
         }
     }
 
@@ -34,6 +36,7 @@ nonisolated enum PageTheme: Int, CaseIterable {
         case .brutalist: Color(red: 0.910, green: 0.902, blue: 0.874)
         case .office: Color(red: 0.960, green: 0.937, blue: 0.875)
         case .koyomi: Color(red: 0.949, green: 0.914, blue: 0.827)
+        case .huangli: Color(red: 0.969, green: 0.925, blue: 0.831) // golden stock
         }
     }
 
@@ -44,6 +47,7 @@ nonisolated enum PageTheme: Int, CaseIterable {
         case .brutalist: Color(red: 0.82, green: 0.81, blue: 0.78)
         case .office: Color(red: 0.87, green: 0.84, blue: 0.76)
         case .koyomi: Color(red: 0.86, green: 0.81, blue: 0.70)
+        case .huangli: Color(red: 0.88, green: 0.81, blue: 0.68)
         }
     }
 
@@ -54,6 +58,7 @@ nonisolated enum PageTheme: Int, CaseIterable {
         case .brutalist: .black
         case .office: Color(red: 0.122, green: 0.165, blue: 0.267) // oxford navy
         case .koyomi: Color(red: 0.149, green: 0.129, blue: 0.110) // sumi
+        case .huangli: Color(red: 0.231, green: 0.169, blue: 0.125) // dark ochre ink
         }
     }
 
@@ -64,6 +69,7 @@ nonisolated enum PageTheme: Int, CaseIterable {
         case .brutalist: Color(red: 1.0, green: 0.176, blue: 0.0)
         case .office: Color(red: 0.702, green: 0.251, blue: 0.165)
         case .koyomi: Color(red: 0.776, green: 0.227, blue: 0.129)
+        case .huangli: Color(red: 0.784, green: 0.204, blue: 0.122)
         }
     }
 
@@ -74,6 +80,7 @@ nonisolated enum PageTheme: Int, CaseIterable {
         case .brutalist: ink
         case .office: Color(red: 0.24, green: 0.33, blue: 0.52)
         case .koyomi: Color(red: 0.227, green: 0.353, blue: 0.549)
+        case .huangli: Color(red: 0.184, green: 0.451, blue: 0.310) // jade green
         }
     }
 
@@ -87,6 +94,7 @@ nonisolated enum PageTheme: Int, CaseIterable {
         case .brutalist: 0.55
         case .office: 0.85
         case .koyomi: 1.35
+        case .huangli: 1.1
         }
     }
 

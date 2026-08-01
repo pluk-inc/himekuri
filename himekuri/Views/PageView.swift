@@ -38,6 +38,7 @@ struct PageView: View {
         case .brutalist: BrutalistLayout(info: info, t: theme)
         case .office: OfficeLayout(info: info, t: theme)
         case .koyomi: KoyomiLayout(info: info, t: theme)
+        case .huangli: HuangliLayout(info: info, t: theme)
         }
     }
 }

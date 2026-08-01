@@ -12,11 +12,13 @@ struct MonthGrid: View {
     let t: PageTheme
     var design: Font.Design = .serif
     var latinHeader = false
+    /// Override the weekday header glyphs (e.g. 日一二…六 for the huangli).
+    var customHeaders: [String]? = nil
 
     var body: some View {
-        let headers = latinHeader
+        let headers = customHeaders ?? (latinHeader
             ? ["S", "M", "T", "W", "T", "F", "S"]
-            : ["日", "月", "火", "水", "木", "金", "土"]
+            : ["日", "月", "火", "水", "木", "金", "土"])
         Grid(horizontalSpacing: 7.5, verticalSpacing: 2.5) {
             GridRow {
                 ForEach(0..<7, id: \.self) { i in

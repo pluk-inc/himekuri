@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 The release script reads the section matching the version being released, so
 keep the `## [X.Y.Z] – YYYY-MM-DD` heading format.
 
+## [Unreleased]
+
+### Added
+
+- Huangli (黄历) theme: a Chinese almanac page with the sexagenary year
+  (干支), zodiac animal, and the lunar date in 初/廿 numerals
+- Leap lunar months (閏/闰) now shown correctly on the Koyomi and
+  Huangli pages
+
+### Changed
+
+- The Japanese era (令和…) now comes from the system's Japanese
+  calendar, so a future era change needs no app update
+
 ## [0.1.1] – 2026-08-01
 
 ### Added

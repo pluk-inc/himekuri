@@ -58,7 +58,7 @@ struct KoyomiLayout: View {
             Spacer(minLength: 2)
 
             // Old-calendar date.
-            Text(verbatim: "旧暦 \(kanjiNumber(info.lunarMonth))月\(kanjiNumber(info.lunarDay))日")
+            Text(verbatim: "旧暦 \(info.isLeapLunarMonth ? "閏" : "")\(kanjiNumber(info.lunarMonth))月\(kanjiNumber(info.lunarDay))日")
                 .font(Theme.mincho(10))
                 .foregroundStyle(t.ink.opacity(0.75))
 
