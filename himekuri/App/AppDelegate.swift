@@ -6,6 +6,7 @@
 //
 
 import Cocoa
+import ServiceManagement
 import Sparkle
 import SwiftUI
 
@@ -134,6 +135,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             item.tag = 10 + mode.rawValue
             menu.addItem(item)
         }
+        menu.addItem(.separator())
+
+        let login = NSMenuItem(
+            title: String(localized: "Launch at Login"),
+            action: #selector(toggleLaunchAtLogin),
+            keyEquivalent: ""
+        )
+        login.tag = 3
+        menu.addItem(login)
 
         #if DEBUG
         // Development escape hatch only — a shipped himekuri has no way back.
@@ -162,6 +172,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         for theme in PageTheme.allCases {
             menu.item(withTag: 20 + theme.rawValue)?.state = theme.rawValue == currentTheme ? .on : .off
         }
+        menu.item(withTag: 3)?.state = SMAppService.mainApp.status == .enabled ? .on : .off
     }
 
     // MARK: - Actions
@@ -193,6 +204,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @IBAction func checkForUpdates(_ sender: Any?) {
         NSApp.activate()
         updaterController.updater.checkForUpdates()
+    }
+
+    @objc private func toggleLaunchAtLogin() {
+        // Registration can fail (e.g. parental controls); the checkmark
+        // reads back the real status either way.
+        if SMAppService.mainApp.status == .enabled {
+            try? SMAppService.mainApp.unregister()
+        } else {
+            try? SMAppService.mainApp.register()
+        }
     }
 
     @objc private func quit() {

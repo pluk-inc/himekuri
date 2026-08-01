@@ -1,6 +1,12 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Launch at Login" : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ログイン時に起動" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "登录时启动" } }
+      }
+    },
     "Show Calendar" : {
       "localizations" : {
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "カレンダーを表示" } },
