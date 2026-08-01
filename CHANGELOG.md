@@ -15,6 +15,5 @@ Initial release.
   inherits the throw
 - Five print styles: Shōwa Print, Minimal Swiss, Brutalist, Retro Office,
   and Koyomi
-- Optional auto-tear at midnight
 - Float above windows, standard window, or pin-to-desktop modes
 - Sparkle over-the-air updates via Amore

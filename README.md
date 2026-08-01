@@ -19,7 +19,7 @@ five print styles, no accounts, no network.
   crack-propagation tearing tuned from the mechanics literature
 - Five print styles: Shōwa Print (default), Minimal Swiss, Brutalist,
   Retro Office, Koyomi
-- Optional auto-tear at midnight; Reset to Today is the only way back
+- The pad never turns its own page; Reset to Today is the only way back
 - Procedurally synthesized paper sounds — no audio assets
 
 ## Building
