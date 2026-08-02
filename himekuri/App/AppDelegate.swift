@@ -30,11 +30,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         NSApp.setActivationPolicy(.accessory)
         makeWindow()
         makeStatusItem()
-        NSApp.activate()
+        activateApp()
     }
 
     func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
         true
+    }
+
+    /// Bring the pad forward. The cooperative `activate()` is macOS 14+;
+    /// older systems only have the blunt instrument.
+    private func activateApp() {
+        if #available(macOS 14.0, *) {
+            NSApp.activate()
+        } else {
+            NSApp.activate(ignoringOtherApps: true)
+        }
     }
 
     // MARK: - Window
@@ -74,8 +84,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         window.isOpaque = false
         window.backgroundColor = .clear
         window.hasShadow = false
-        // Window movement is handled by an explicit WindowDragGesture on the pad,
-        // so it never steals the tear gesture.
+        // Window movement is handled by an explicit drag handle on the pad's
+        // binding, so it never steals the tear gesture.
         window.isMovableByWindowBackground = false
         window.isReleasedWhenClosed = false
 
@@ -135,15 +145,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             item.tag = 10 + mode.rawValue
             menu.addItem(item)
         }
-        menu.addItem(.separator())
-
-        let login = NSMenuItem(
-            title: String(localized: "Launch at Login"),
-            action: #selector(toggleLaunchAtLogin),
-            keyEquivalent: ""
-        )
-        login.tag = 3
-        menu.addItem(login)
+        // SMAppService is Ventura and later. Registering a login item the old
+        // way needs a bundled helper, which is not worth carrying for the few
+        // Monterey machines left — they just don't get the toggle, and the
+        // separator goes with it so the menu doesn't gain a double rule.
+        if #available(macOS 13.0, *) {
+            menu.addItem(.separator())
+            let login = NSMenuItem(
+                title: String(localized: "Launch at Login"),
+                action: #selector(toggleLaunchAtLogin),
+                keyEquivalent: ""
+            )
+            login.tag = 3
+            menu.addItem(login)
+        }
 
         #if DEBUG
         // Development escape hatch only — a shipped himekuri has no way back.
@@ -172,7 +187,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         for theme in PageTheme.allCases {
             menu.item(withTag: 20 + theme.rawValue)?.state = theme.rawValue == currentTheme ? .on : .off
         }
-        menu.item(withTag: 3)?.state = SMAppService.mainApp.status == .enabled ? .on : .off
+        if #available(macOS 13.0, *) {
+            menu.item(withTag: 3)?.state = SMAppService.mainApp.status == .enabled ? .on : .off
+        }
     }
 
     // MARK: - Actions
@@ -183,7 +200,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             window.center()
         }
         window.makeKeyAndOrderFront(nil)
-        NSApp.activate()
+        activateApp()
     }
 
     @objc private func selectMode(_ sender: NSMenuItem) {
@@ -197,15 +214,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc private func showAbout() {
-        NSApp.activate()
+        activateApp()
         NSApp.orderFrontStandardAboutPanel(nil)
     }
 
     @IBAction func checkForUpdates(_ sender: Any?) {
-        NSApp.activate()
+        activateApp()
         updaterController.updater.checkForUpdates()
     }
 
+    @available(macOS 13.0, *)
     @objc private func toggleLaunchAtLogin() {
         // Registration can fail (e.g. parental controls); the checkmark
         // reads back the real status either way.
@@ -227,7 +245,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         alert.informativeText = "The calendar will show today again. This is the only way back."
         alert.addButton(withTitle: "Reset")
         alert.addButton(withTitle: "Cancel")
-        NSApp.activate()
+        activateApp()
         if alert.runModal() == .alertFirstButtonReturn {
             NotificationCenter.default.post(name: .himekuriResetToToday, object: nil)
         }

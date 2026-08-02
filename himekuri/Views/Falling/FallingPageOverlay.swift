@@ -59,7 +59,7 @@ enum FallingPageOverlay {
         window.orderFront(nil)
 
         Task {
-            try? await Task.sleep(for: .seconds(3.4))
+            try? await Task.sleep(nanoseconds: 3_400_000_000)
             main.removeChildWindow(window)
             window.orderOut(nil)
             window.contentView = nil

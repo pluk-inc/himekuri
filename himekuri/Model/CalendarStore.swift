@@ -5,26 +5,29 @@
 //  The pad of pages. Tearing only ever moves forward — there is no way back.
 //
 
+import Combine
 import Foundation
-import Observation
 
 extension Notification.Name {
     /// Posted by the dev-only menu item to snap the pad back to today's page.
     static let himekuriResetToToday = Notification.Name("himekuri.resetToToday")
 }
 
-@Observable
-final class CalendarStore {
+/// `ObservableObject` rather than `@Observable`: the latter needs macOS 14,
+/// and the pad has to work back to Monterey.
+final class CalendarStore: ObservableObject {
     private static let topDateKey = "himekuri.topDate"
     private static let tornCountKey = "himekuri.tornCount"
 
     private let cal = Calendar.current
 
     /// The date printed on the page currently on top of the pad.
-    private(set) var topDate: Date
+    @Published private(set) var topDate: Date
     /// Total pages ever torn off.
-    private(set) var tornCount: Int
+    @Published private(set) var tornCount: Int
     /// Start of the current real day (refreshed at midnight / on activation).
+    /// Deliberately not `@Published`: no view reads it, and `refreshToday()`
+    /// runs on every activation — republishing would redraw the whole pad.
     private(set) var today: Date
 
     init() {

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 The release script reads the section matching the version being released, so
 keep the `## [X.Y.Z] – YYYY-MM-DD` heading format.
 
+## [Unreleased]
+
+### Added
+
+- Launch at Login, from the menu bar item (macOS 13+)
+
+### Changed
+
+- Himekuri now runs on macOS 12 (Monterey) and later, down from macOS 15.
+  Everything works there; two touches need newer systems and are skipped
+  quietly otherwise — the falling page's ripple wants the Metal shader
+  support in macOS 14, and Launch at Login wants macOS 13.
+
 ## [0.1.2] – 2026-08-01
 
 ### Added
