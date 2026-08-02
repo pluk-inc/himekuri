@@ -38,7 +38,7 @@ evenings, open-sourced early because it's more fun that way.
   Only development builds get an escape hatch.
 - It has been tested on exactly one Mac. macOS 12–13 support is claimed by the
   deployment target and the code paths, not by anyone actually running it there.
-- The animations are not where I want them (see [Help wanted](#help-wanted-the-animations)).
+- The animations are not where I want them (see [Help wanted](#help-wanted)).
 
 This is a little fun project — a toy about paper, not a productivity tool.
 Nothing here is serious. Please don't run your life on it.
@@ -100,41 +100,22 @@ Six of them, switched from the menu bar. Same paper, same physics, different pre
 - **No network, no accounts, no telemetry.** The only thing it phones is the
   Sparkle update feed.
 
-## Help wanted: the animations
+## Help wanted
 
-**This is the part I'm least happy with, and the main reason the repo is open.**
-If you know SpriteKit, Metal, SwiftUI performance, or — best of all — the actual
-aerodynamics of falling paper, I would love the help.
+**The animations are the part I'm least happy with, and the main reason the repo
+is open** — the falling sheet is hand-authored waypoints rather than anything
+that knows about air or mass, and it reads as "swaying rectangle" instead of
+paper. If you know SpriteKit, Metal, SwiftUI performance, or the actual
+aerodynamics of falling paper, everything wrong with it is written up in
+[issue #2](https://github.com/pluk-inc/himekuri/issues/2), broken into pieces
+you can take one at a time.
 
-What bothers me:
-
-- **The fall is hand-authored, not simulated.** `Views/Falling/FallPlan.swift`
-  is four tracks of tuned waypoints (x, y, rotation, tilt) played back by a
-  `KeyframeAnimator`. It knows nothing about mass, air, or the shape of the torn
-  piece, so every sheet falls the same way and it reads as "swaying rectangle"
-  rather than paper. The falling-plate / tumbling-card literature has cheap
-  models that would beat my numbers easily.
-- **The ripple is a sine wave.** `Paper/PaperShaders.metal` waves the sheet with
-  a trig function. Paper bends; it doesn't undulate.
-- **`PaperScene.update` rebuilds the whole warp grid every frame** — a fresh
-  `SKWarpGeometryGrid` plus a newly allocated destination-position array, 154
-  vertices, at display rate. No reuse, and no substepping in the solver.
-- **Nothing is measured.** No frame budget, no instrumentation, no real idea
-  what the pad costs while it's just hanging there. A desktop widget should be
-  free when you aren't touching it.
-- **The tear model is magic numbers.** The `tanh` travel caps, the 0.95 runaway
-  threshold, and the 0.8 damage amplification in `Views/ContentView.swift` were
-  tuned by feel at 1am.
-- **A whole borderless `NSWindow` per torn page** (`FallingPageOverlay.swift`),
-  spanning from the pad to the bottom of the screen and kept alive on a 3.4 s
-  timer. It works, but it's a heavy way to animate one sheet of paper.
-
-Other known rough edges, if you'd rather fix something smaller:
-
-- The Koyomi layout parks the kanji day in a fixed 250 pt frame, which leaves an
-  awkward hole on single-digit days.
-- No tests and no CI. A macOS runner with Xcode 26 would be a genuinely useful PR.
-- Multi-display and display-disconnect behaviour is untested.
+Smaller things to pick up: [the Koyomi layout's hole on single-digit
+days](https://github.com/pluk-inc/himekuri/issues/3), [no CI at
+all](https://github.com/pluk-inc/himekuri/issues/4), and [untested
+multi-display behaviour](https://github.com/pluk-inc/himekuri/issues/5). The
+full list lives in
+[Issues](https://github.com/pluk-inc/himekuri/issues).
 
 ## Requirements
 
@@ -189,7 +170,7 @@ authenticated `amore` CLI.
 ## Contributing
 
 Pull requests are very welcome, especially on anything under
-[Help wanted](#help-wanted-the-animations). For larger changes, open an issue
+[Help wanted](#help-wanted). For larger changes, open an issue
 first so we don't both rewrite the paper solver.
 
 1. Fork the repo and branch from `main`.
