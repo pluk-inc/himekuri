@@ -38,7 +38,7 @@ struct PadBinding: View {
         .frame(width: Metrics.pageW + 10, height: Metrics.bindingH)
         .shadow(color: .black.opacity(0.18), radius: 2, y: 1.5)
         .contentShape(Rectangle())
-        .gesture(WindowDragGesture())
+        .windowDragHandle()
     }
 
     private var staple: some View {

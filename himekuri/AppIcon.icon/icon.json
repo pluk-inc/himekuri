@@ -4,12 +4,12 @@
     {
       "layers" : [
         {
-          "image-name" : "ChatGPT Image Aug 1, 2026, 08_57_57 PM 2.png",
-          "name" : "ChatGPT Image Aug 1, 2026, 08_57_57 PM 2"
+          "image-name" : "icon-layer-back.png",
+          "name" : "icon-layer-back"
         },
         {
-          "image-name" : "ChatGPT Image Aug 1, 2026, 08_57_57 PM.png",
-          "name" : "ChatGPT Image Aug 1, 2026, 08_57_57 PM",
+          "image-name" : "icon-layer-front.png",
+          "name" : "icon-layer-front",
           "position" : {
             "scale" : 1,
             "translation-in-points" : [

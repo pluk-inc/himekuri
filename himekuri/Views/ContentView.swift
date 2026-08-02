@@ -11,7 +11,7 @@ import SwiftUI
 
 struct ContentView: View {
     @AppStorage(PageTheme.defaultsKey) private var themeRaw = 0
-    @State private var store = CalendarStore()
+    @StateObject private var store = CalendarStore()
     @State private var drag: CGSize = .zero
     @State private var hold: CGFloat = 0
     @State private var dragging = false
@@ -77,8 +77,10 @@ struct ContentView: View {
             paperScene.sim = sim
             refreshPageTexture()
         }
-        .onChange(of: store.topDate) { refreshPageTexture() }
-        .onChange(of: themeRaw) { refreshPageTexture() }
+        // The two-parameter `onChange` is macOS 14+; this overload is the one
+        // that exists back to Monterey.
+        .onChange(of: store.topDate) { _ in refreshPageTexture() }
+        .onChange(of: themeRaw) { _ in refreshPageTexture() }
         .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in
             store.refreshToday()
         }
@@ -303,9 +305,8 @@ struct ContentView: View {
 
     /// Prints the current top page into the texture the solver warps.
     private func refreshPageTexture() {
-        let renderer = ImageRenderer(content: PageView(info: store.topInfo, theme: theme))
-        renderer.scale = 2
-        if let cg = renderer.cgImage {
+        let page = PageView(info: store.topInfo, theme: theme)
+        if let cg = Snapshot.cgImage(of: page, scale: 2) {
             paperScene.setPageTexture(SKTexture(cgImage: cg))
         }
     }

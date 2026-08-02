@@ -18,11 +18,11 @@ struct PadStubs: View {
             // An older, slightly deeper sliver peeking out beneath.
             if tornCount > 1 {
                 StubShape(seed: tearSeed(for: tornCount - 2))
-                    .fill(theme.paper.mix(with: theme.edge, by: 0.5))
+                    .fill(theme.paper.blended(with: theme.edge, by: 0.5))
                     .offset(y: 1.4)
             }
             StubShape(seed: lastSeed)
-                .fill(theme.paper.mix(with: theme.edge, by: 0.15))
+                .fill(theme.paper.blended(with: theme.edge, by: 0.15))
                 .shadow(color: .black.opacity(0.10), radius: 1.4, y: 1)
             TearEdgeLine(seed: lastSeed)
                 .stroke(Color.white.opacity(0.5), lineWidth: 0.7)
