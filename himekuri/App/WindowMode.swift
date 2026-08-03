@@ -11,6 +11,9 @@ enum WindowMode: Int, CaseIterable {
     case normal = 1    // an ordinary window
     case desktop = 2   // pinned to the desktop, beneath all windows
 
+    /// Where a fresh install starts: on the desktop, like a real paper pad.
+    static let `default` = WindowMode.desktop
+
     var title: String {
         switch self {
         case .floating: String(localized: "Float Above Windows")
