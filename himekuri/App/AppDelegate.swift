@@ -25,7 +25,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         UserDefaults.standard.register(defaults: [
-            Self.modeKey: WindowMode.floating.rawValue,
+            Self.modeKey: WindowMode.default.rawValue,
         ])
         NSApp.setActivationPolicy(.accessory)
         makeWindow()
@@ -50,7 +50,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     // MARK: - Window
 
     private var currentMode: WindowMode {
-        WindowMode(rawValue: UserDefaults.standard.integer(forKey: Self.modeKey)) ?? .floating
+        WindowMode(rawValue: UserDefaults.standard.integer(forKey: Self.modeKey)) ?? .default
     }
 
     private func applyMode(_ mode: WindowMode) {

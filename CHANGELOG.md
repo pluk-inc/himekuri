@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 The release script reads the section matching the version being released, so
 keep the `## [X.Y.Z] – YYYY-MM-DD` heading format.
 
+## [Unreleased]
+
+### Changed
+
+- A fresh install now starts pinned to the desktop instead of floating above
+  every window, so the pad behaves like the paper one it's modelled on.
+  Existing installs keep whatever mode they were set to.
+
 ## [0.1.3] – 2026-08-02
 
 ### Added
