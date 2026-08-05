@@ -28,6 +28,8 @@ struct PadStubs: View {
                 .stroke(Color.white.opacity(0.5), lineWidth: 0.7)
         }
         .frame(width: Metrics.pageW, height: 36)
+        .compositingGroup()
+        .opacity(theme.paperOpacity)
         .allowsHitTesting(false)
     }
 }
