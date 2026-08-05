@@ -11,6 +11,8 @@ struct FallingPage: Identifiable {
     let id = UUID()
     let info: DayInfo
     let theme: PageTheme
+    /// Set when the freed piece is one of the pad's lesson pages.
+    var onboarding: OnboardingPage? = nil
     let seed: UInt64
     let start: CGSize
     let grabX: CGFloat

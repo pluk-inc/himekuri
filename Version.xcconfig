@@ -1,5 +1,5 @@
 // Centralized version configuration.
 // Bump these values to release a new version (scripts/release.sh does it for you).
 
-MARKETING_VERSION = 0.1.4
-CURRENT_PROJECT_VERSION = 5
+MARKETING_VERSION = 0.2.0
+CURRENT_PROJECT_VERSION = 6

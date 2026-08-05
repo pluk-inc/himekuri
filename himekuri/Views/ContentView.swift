@@ -80,6 +80,9 @@ struct ContentView: View {
         // The two-parameter `onChange` is macOS 14+; this overload is the one
         // that exists back to Monterey.
         .onChange(of: store.topDate) { _ in refreshPageTexture() }
+        // A lesson page comes off without the date moving, so the texture
+        // needs reprinting off this too.
+        .onChange(of: store.onboardingTorn) { _ in refreshPageTexture() }
         .onChange(of: themeRaw) { _ in refreshPageTexture() }
         .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in
             store.refreshToday()
@@ -108,7 +111,7 @@ struct ContentView: View {
 
             PadStack(remainingFraction: store.remainingFraction, theme: theme)
 
-            PageView(info: store.nextInfo, theme: theme)
+            PageView(info: store.nextInfo, theme: theme, onboarding: store.nextOnboardingPage)
                 // Recessed in the stack and shaded by the sheet above: without
                 // this the revealed page reads as a bright copy of the top one.
                 .overlay(
@@ -305,7 +308,7 @@ struct ContentView: View {
 
     /// Prints the current top page into the texture the solver warps.
     private func refreshPageTexture() {
-        let page = PageView(info: store.topInfo, theme: theme)
+        let page = PageView(info: store.topInfo, theme: theme, onboarding: store.onboardingPage)
         if let cg = Snapshot.cgImage(of: page, scale: 2) {
             paperScene.setPageTexture(SKTexture(cgImage: cg))
         }
@@ -319,6 +322,7 @@ struct ContentView: View {
         let piece = FallingPage(
             info: store.topInfo,
             theme: theme,
+            onboarding: store.onboardingPage,
             seed: tearSeed(for: store.tornCount),
             // An upward tear frees the sheet where the roll was, not at rest.
             start: CGSize(

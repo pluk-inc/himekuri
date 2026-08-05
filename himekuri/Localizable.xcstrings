@@ -97,6 +97,74 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "退出 Himekuri" } }
       }
     },
+    "WELCOME" : {
+      "comment" : "Kicker on the first welcome page",
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "はじめに" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "开始" } }
+      }
+    },
+    "Pull the page down" : {
+      "comment" : "Headline on the first welcome page",
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "引いてめくる" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "向下撕开" } }
+      }
+    },
+    "Grab the sheet anywhere and pull down until the paper gives." : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "紙のどこでもつかんで、破れるまで下へ引いてください。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "抓住纸面任意位置向下拉，直到纸张撕开。" } }
+      }
+    },
+    "PULL" : {
+      "comment" : "Label on the tear diagram",
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ひく" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "下拉" } }
+      }
+    },
+    "Practice page · costs no day" : {
+      "comment" : "Footer on the first welcome page",
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "練習用のページ · 日付は進みません" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "练习页 · 不消耗日期" } }
+      }
+    },
+    "PRINT STYLES" : {
+      "comment" : "Kicker on the second welcome page",
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "テーマ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "主题" } }
+      }
+    },
+    "Seven prints" : {
+      "comment" : "Headline on the second welcome page",
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "印刷は七種類" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "七种印刷风格" } }
+      }
+    },
+    "Click the calendar in the menu bar, then Theme, to print the pad another way." : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "メニューバーのカレンダーをクリックし、「テーマ」から別の印刷を選べます。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "点击菜单栏的日历图标，在「主题」中切换印刷风格。" } }
+      }
+    },
+    "UP HERE" : {
+      "comment" : "Label on the menu-bar diagram",
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ここから" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在这里" } }
+      }
+    },
+    "Pull this page down for today's date" : {
+      "comment" : "Call to action on the last welcome page",
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "このページをめくると今日の日付が出ます" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "向下撕开这页，即见今天的日期" } }
+      }
+    },
     "Himekuri" : {
       "comment" : "Status item accessibility label",
       "localizations" : {
