@@ -13,7 +13,7 @@ struct PageView: View {
 
     var body: some View {
         ZStack {
-            theme.paper
+            theme.paper.opacity(theme.paperOpacity)
             // Thin stock: tomorrow's print ghosts faintly through the sheet.
             if theme.showThrough > 0 {
                 let cal = Calendar.current
@@ -39,6 +39,7 @@ struct PageView: View {
         case .office: OfficeLayout(info: info, t: theme)
         case .koyomi: KoyomiLayout(info: info, t: theme)
         case .huangli: HuangliLayout(info: info, t: theme)
+        case .tongsheng: TongshengLayout(info: info, t: theme)
         }
     }
 }

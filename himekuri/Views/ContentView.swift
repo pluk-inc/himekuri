@@ -101,7 +101,7 @@ struct ContentView: View {
         ZStack(alignment: .top) {
             // Soft shadow the whole object casts on the wall.
             RoundedRectangle(cornerRadius: 3)
-                .fill(Color.black.opacity(0.30))
+                .fill(Color.black.opacity(0.30 * theme.paperOpacity))
                 .frame(width: Metrics.pageW, height: Metrics.pageH)
                 .offset(x: 6, y: Metrics.pageTopInset + 14)
                 .blur(radius: 16)

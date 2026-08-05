@@ -55,7 +55,7 @@ Homebrew cask yet.
 
 ## Print styles
 
-Six of them, switched from the menu bar. Same paper, same physics, different press.
+Seven of them, switched from the menu bar. Same paper, same physics, different press.
 
 <table>
   <tr>
@@ -66,7 +66,12 @@ Six of them, switched from the menu bar. Same paper, same physics, different pre
   <tr>
     <td align="center"><img src="docs/theme-office.png" width="240" alt="Retro Office" /><br /><b>Retro Office</b><br /><sub>American memo calendar</sub></td>
     <td align="center"><img src="docs/theme-koyomi.png" width="240" alt="Koyomi" /><br /><b>Koyomi</b><br /><sub>Traditional lunar almanac</sub></td>
-    <td align="center"><img src="docs/theme-huangli.png" width="240" alt="Huangli" /><br /><b>Huangli</b><br /><sub>Chinese almanac (黄历)</sub></td>
+    <td align="center"><img src="docs/theme-huangli.png" width="240" alt="Huangli" /><br /><b>Huangli</b><br /><sub>Green almanac (黄历), 八卦 wheel, see-through stock</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/theme-tongsheng.png" width="240" alt="Tong Sheng" /><br /><b>Tong Sheng</b><br /><sub>Red-ink lunisolar almanac (通勝), on see-through stock</sub></td>
+    <td></td>
+    <td></td>
   </tr>
 </table>
 
@@ -92,11 +97,40 @@ Six of them, switched from the menu bar. Same paper, same physics, different pre
   system Japanese calendar so a future era change needs no app update), rokuyō,
   lunar dates with leap months (閏/闰), and the sexagenary year with its zodiac
   animal on the Huangli page.
+- **A lunisolar calendar underneath, and an almanac on top of it** — the
+  calendar layer (`Model/Lunisolar.swift`) has the lunar month and whether it
+  runs 30 days (大) or 29 (小), leap months, the moon's phase, the 24 solar
+  terms computed from the sun's actual ecliptic longitude
+  (`Support/Astro.swift`), and the festivals that hang off both — including
+  除夕, which is the last day of the twelfth month whether that falls on the
+  29th or the 30th. The almanac layer (`Model/Huangli.swift`) lays judgement
+  over that date: the day's stem and branch, its 納音 element, which of the 28
+  mansions is on duty, which of the twelve officers holds the day and so what
+  it is 宜 and 忌 for, the zodiac it 沖s, the lucky directions, and which of
+  the twelve double-hours sit on the yellow road. Both are pure arithmetic on a
+  date — no tables to expire, no network. The day pillars were checked against
+  printed 通勝 calendars three years apart.
+- **Two almanacs, two presses, two registers** — 通勝 and 黄历 are the same
+  system under a Cantonese and a Mandarin name, so the shared model is called
+  neither (`Model/Almanac.swift`) and each page is set the way its own name is
+  used. Tong Sheng is the Hong Kong and Southeast Asian book: red on white,
+  traditional characters, a ruled table with the twelve double-hours as a grid,
+  and the Hijri date those pads carry. Huangli is the mainland one: green on
+  white, simplified characters, double-ruled, the weekday standing in a filled
+  column, the 八卦 wheel between the day's 宜 and 忌, and no Hijri line.
+- **Almanac stock you can see the desk through** — both almanac pages are
+  printed on paper thin enough to read your desktop through, the way the real
+  newsprint pads are. Only the paper fades; the ink stays at full strength, so
+  the page is still legible over whatever is behind it. The other five styles
+  are opaque.
 - **Procedural sound** — the rustle, the crackle, and the rip are synthesized at
   tear time. No audio files ship with the app.
 - **The pad never turns its own page.** Miss a day and yesterday is still
   hanging there, waiting for you to deal with it.
-- **Localized** menu bar in English, Japanese, and Simplified Chinese.
+- **Localized** menu bar in English, Japanese, and Simplified Chinese —
+  including the print-style names, so the almanac pages appear as 黄历 and
+  通胜 on a Chinese system rather than as romanizations. ("Tong Sheng" was
+  Mandarin pinyin of a Cantonese word, which served neither reader.)
 - **No network, no accounts, no telemetry.** The only thing it phones is the
   Sparkle update feed.
 

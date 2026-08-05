@@ -22,6 +22,8 @@ struct PadStack: View {
                     .offset(x: depth * 0.55, y: Metrics.pageTopInset + depth * 0.85)
             }
         }
+        .compositingGroup()
+        .opacity(theme.paperOpacity)
         .allowsHitTesting(false)
     }
 }

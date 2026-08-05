@@ -19,6 +19,48 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "主题" } }
       }
     },
+    "Shōwa Print" : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "昭和印刷" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "昭和印刷" } }
+      }
+    },
+    "Minimal Swiss" : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "スイス・ミニマル" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "瑞士极简" } }
+      }
+    },
+    "Brutalist" : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ブルータリズム" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "粗野主义" } }
+      }
+    },
+    "Retro Office" : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "レトロオフィス" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "复古办公" } }
+      }
+    },
+    "Koyomi" : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "暦" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "和历" } }
+      }
+    },
+    "Huangli" : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "黄暦" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "黄历" } }
+      }
+    },
+    "Tong Sheng" : {
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "通勝" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "通胜" } }
+      }
+    },
     "Float Above Windows" : {
       "localizations" : {
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "ウインドウの手前に表示" } },
