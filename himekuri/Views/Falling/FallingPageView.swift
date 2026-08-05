@@ -62,7 +62,7 @@ struct FallingPageView: View {
     private func sheet(_ v: FallState, rippleTime: Double?) -> some View {
         // Farther from the wall: softer, fainter, lower shadow.
         let depth = min(max(v.y / Double(fallDistance), 0), 1)
-        return PageView(info: page.info, theme: page.theme)
+        return PageView(info: page.info, theme: page.theme, onboarding: page.onboarding)
             .clipShape(TornPieceShape(seed: page.seed))
             // The sheet is not rigid — it ripples as it planes.
             .padding(14)

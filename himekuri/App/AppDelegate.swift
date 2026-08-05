@@ -242,7 +242,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @objc private func resetToToday() {
         let alert = NSAlert()
         alert.messageText = "Reset the pad to today's page?"
-        alert.informativeText = "The calendar will show today again. This is the only way back."
+        alert.informativeText = "The calendar will show today again, behind the two welcome pages. This is the only way back."
         alert.addButton(withTitle: "Reset")
         alert.addButton(withTitle: "Cancel")
         activateApp()

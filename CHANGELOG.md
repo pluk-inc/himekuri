@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 The release script reads the section matching the version being released, so
 keep the `## [X.Y.Z] – YYYY-MM-DD` heading format.
 
-## [Unreleased]
+## [0.2.0] – 2026-08-05
 
 ### Added
 
@@ -23,6 +23,13 @@ keep the `## [X.Y.Z] – YYYY-MM-DD` heading format.
 - Tong Sheng (通勝) theme: the red-ink tear-off almanac, one colour on cheap
   white stock, with the Gregorian, lunisolar, and Hijri dates in the masthead
   and the almanac table underneath
+- Two pages in front of a fresh pad, printed in the selected style rather than
+  laid over it as a dialog: the first teaches the pull, the second points up at
+  the menu bar where the other prints are and says outright that tearing it
+  brings up today. Both are free — they leave their stubs under the staples but
+  cost no day, so the first real page is still today's, whenever it is uncovered.
+  A pad that has already been torn from, or had its style changed, doesn't get
+  them
 
 ### Changed
 
