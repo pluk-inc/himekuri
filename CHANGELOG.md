@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 The release script reads the section matching the version being released, so
 keep the `## [X.Y.Z] – YYYY-MM-DD` heading format.
 
+## [0.2.1] – 2026-08-06
+
+### Fixed
+
+- The Koyomi page no longer leaves a band of empty paper above the old-calendar
+  line on single-digit days. The kanji numeral had been parked in a fixed frame
+  sized for 三十一, so 二 sat alone at the top of it; the day is now set from how
+  many characters the numeral actually takes. 二十 and 三十 are two characters
+  and had been shrunk as if they were three — they now read at the two-character
+  size, and the divider and grid below sit 13pt higher, giving the page back the
+  bottom margin it asks for
+
+### Contributors
+
+Thanks to the external contributors who shipped in this release:
+
+- [@vsolano9](https://github.com/vsolano9) — sized the kanji day by character
+  count instead of a fixed frame ([#9](https://github.com/pluk-inc/himekuri/pull/9))
+
 ## [0.2.0] – 2026-08-05
 
 ### Added
