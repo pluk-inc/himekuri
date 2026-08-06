@@ -33,7 +33,7 @@ struct KoyomiLayout: View {
                 VStack(spacing: 8) {
                     VerticalText(
                         kanjiNumber(info.day),
-                        font: Theme.mincho(info.day >= 20 ? 52 : 64),
+                        font: Theme.mincho(dayFontSize),
                         color: t.accent(for: info),
                         spacing: 0
                     )
@@ -41,7 +41,6 @@ struct KoyomiLayout: View {
                         .font(.system(size: 11, weight: .semibold, design: .serif).monospacedDigit())
                         .foregroundStyle(t.ink.opacity(0.6))
                 }
-                .frame(height: 250, alignment: .top)
 
                 Spacer(minLength: 0)
 
@@ -81,6 +80,23 @@ struct KoyomiLayout: View {
             }
 
             Spacer().frame(height: 12)
+        }
+    }
+
+    /// Point size for the kanji day, chosen from how many characters it takes.
+    ///
+    /// The column is only as tall as the numeral sets, so a lone 二 used to leave
+    /// a hole under it where 三十一 filled the page. Sizing by character count
+    /// evens the three cases out. A single glyph inks at most 136pt wide, inside
+    /// the 148pt the side columns leave free.
+    ///
+    /// Day count, not `day >= 20`: 二十 and 三十 are two characters, and the old
+    /// test shrank them as if they were three.
+    private var dayFontSize: CGFloat {
+        switch kanjiNumber(info.day).count {
+        case 1: 140
+        case 2: 64
+        default: 52
         }
     }
 
