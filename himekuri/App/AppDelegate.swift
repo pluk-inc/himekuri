@@ -194,9 +194,36 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     // MARK: - Actions
 
+    /// Whether enough of `frame` lands on the displays that are actually attached.
+    ///
+    /// Pure and non-private so the multi-display behaviour can be exercised without a second
+    /// monitor: pass synthetic `visibleFrames` rather than `NSScreen.screens`.
+    ///
+    /// Two things the previous `NSScreen.main.visibleFrame.intersects(_:)` check could not say.
+    /// `NSScreen.main` is the screen holding keyboard focus, not the screen the pad is on, so a
+    /// pad sitting happily on a second display failed the test whenever focus was elsewhere and
+    /// got re-centred away from where the user left it. And `intersects` is satisfied by a single
+    /// pixel, so a pad stranded 99% off-screen after a disconnect passed the test and was never
+    /// recovered.
+    static func isSufficientlyVisible(
+        _ frame: CGRect,
+        on visibleFrames: [CGRect],
+        minimumFraction: CGFloat = 0.5
+    ) -> Bool {
+        let area = frame.width * frame.height
+        guard area > 0 else { return false }
+
+        let visible = visibleFrames.reduce(CGFloat.zero) { total, screen in
+            let overlap = screen.intersection(frame)
+            return overlap.isNull ? total : total + overlap.width * overlap.height
+        }
+        return visible >= area * minimumFraction
+    }
+
     @objc private func showCalendar() {
         guard let window = paperWindow else { return }
-        if let screen = NSScreen.main, !screen.visibleFrame.intersects(window.frame) {
+        // Check every attached display, not just the focused one.
+        if !Self.isSufficientlyVisible(window.frame, on: NSScreen.screens.map(\.visibleFrame)) {
             window.center()
         }
         window.makeKeyAndOrderFront(nil)
