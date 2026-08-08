@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 The release script reads the section matching the version being released, so
 keep the `## [X.Y.Z] – YYYY-MM-DD` heading format.
 
+## [0.2.2] – 2026-08-08
+
+### Fixed
+
+- Show Calendar no longer drags the pad back to the middle of the screen when
+  you keep it on a second display. The check asked only whether the pad met the
+  screen holding keyboard focus, so a pad sitting happily on the external
+  monitor looked lost every time you called it up from the laptop, and got
+  re-centred away from where you left it
+- A pad left behind by a disconnected display is now recovered properly. One
+  pixel of overlap with a remaining screen used to count as visible, so a pad
+  stranded almost entirely off-screen was never brought back; the pad now has
+  to have at least half of itself reachable across all attached displays
+
+### Contributors
+
+Thanks to the external contributors who shipped in this release:
+
+- [@vsolano9](https://github.com/vsolano9) — checked every attached display
+  before re-centring the pad ([#11](https://github.com/pluk-inc/himekuri/pull/11))
+
 ## [0.2.1] – 2026-08-06
 
 ### Fixed
